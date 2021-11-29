@@ -11,6 +11,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     console.log('In another middleware');
+    res.send('Hello from Express.js')
 });
 
 const server = http.createServer(app)
