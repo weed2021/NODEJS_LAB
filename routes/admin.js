@@ -9,7 +9,13 @@ const rootDir = require('../util/path');
 const products = [];
 
 router.get('/add-product', (req, res, next) => {
-    res.render('add-product', { pageTitle: 'Add product page', path: '/admin/add-product' })
+    res.render('add-product', {
+        pageTitle: 'Add product page',
+        path: '/admin/add-product',
+        formsCSS: true,
+        productCSS: true,
+        activeAddProduct: true
+    })
     //res.sendFile(path.join(rootDir,'views','add-product.html'));
 });
 router.post('/add-product', (req, res, next) => {
