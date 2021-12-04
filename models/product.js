@@ -27,18 +27,19 @@ module.exports = class Product {
         });
     };
 
-    static fetchAll() {
+    static fetchAll(cb) {
         const p = path.join(
             path.dirname(process.mainModule.filename),
             'data',
             'products.json'
         );
+
         fs.readFile(p,(err,fileContent) => {
             if(err){
-                return []
-            }
-            return JSON.parse(fileContent)
-        })
+                cb([]);
+            };
+            cb(JSON.parse(fileContent));
+        });
     };
 
     //Static can call directly from class Product
