@@ -30,6 +30,12 @@
                             rows="10"><% if(editing) { %><%= product.description %><%}%></textarea>
                     </div>
 
+                    <!-- Using for post edit product -->
+                    <% if (editing) { %> 
+                        
+                        <input type="hidden" value="<%= product.id %>" name="productId">
+                        
+                    <% } %>
 
 
                     <button type="submit">
