@@ -1,14 +1,11 @@
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
-    res.render('admin/add-product', {
+    res.render('admin/edit-product', {
         pageTitle: 'Add product page',
         path: '/admin/add-product',
-        formsCSS: true,
-        productCSS: true,
-        activeAddProduct: true
+        //activeAddProduct: true
     })
-    //res.sendFile(path.join(rootDir,'views','add-product.html'));
 };
 
 
@@ -21,6 +18,20 @@ exports.postAddProduct = (req, res, next) => {
     product.save();
     //products.push({ title: req.body.title });
     res.redirect('/');
+};
+
+exports.getEditProduct = (req, res, next) => {
+    const editMode = req.query.edit;
+    if(!editMode){
+        return res.redirect('/');
+    }
+    res.render('admin/edit-product', {
+        pageTitle: 'Edit product page',
+        path: '/admin/edit-product',
+        editting: editMode
+    })
+    console.log(editMode)
+    //res.sendFile(path.join(rootDir,'views','add-product.html'));
 };
 
 exports.getProducts = (req, res, next) => {
