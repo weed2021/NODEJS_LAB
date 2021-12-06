@@ -60,5 +60,15 @@ module.exports = class Product {
         })
     }
 
+    static deleteById(id){
+        getProductsFromFile(products =>{
+            const updatedProducts = products.filter(prod => prod.id !==id); //Filter all product different with product which deleted from file
+            fs.writeFile(p,JSON.stringify(updatedProducts), err =>{
+                if(!err){
+
+                }
+            })
+        });
+    }
     //Static can call directly from class Product
 }
