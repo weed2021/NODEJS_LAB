@@ -12,7 +12,10 @@ module.exports = class Product {
     };
 
     save() {
-        
+        return db.execute(
+            'INSERT INTO PRODUCTS (TITLE, PRICE, IMAGEURL, DESCRIPTION) VALUES (?,?,?,?)',
+            [this.title,this.price,this.imageUrl,this.description]
+        )
     };
 
     static fetchAll() {
