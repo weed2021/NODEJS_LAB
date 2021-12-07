@@ -41,8 +41,8 @@ Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
-    .sync({force:true}) //Force drop all table to recreate new which had relation
-    //.sync()
+    //.sync({force:true}) //Force drop all table to recreate new which had relation
+    .sync()
     .then(result => {
         //console.log(result);
         return User.findByPk(1);
@@ -55,6 +55,10 @@ sequelize
     })
     .then(user => {
         //console.log(user);
+        return user.createCart();
+        
+    })
+    .then(cart=>{
         app.listen(3000);
     })
     .catch(err => {
