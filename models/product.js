@@ -1,5 +1,6 @@
 const getDb = require('../util/database').getDb;
 const mongodb = require('mongodb');
+const ObjectId = mongodb.ObjectId;
 
 class Product {
     constructor(title, price, description, imageUrl, id) {
@@ -16,8 +17,8 @@ class Product {
         if (this._id) {
             //Update the product
             dbOp = db
-                .collection('product')
-                .updateOne({ _id: new mongodb.ObjectId(this_id) }, { $set: this });
+                .collection('products')
+                .updateOne({ _id: new ObjectId(this._id) }, { $set: this });
         } else {
             dbOp = db
                 .collection('products')
