@@ -29,7 +29,6 @@ app.use('/admin', adminRoutes)
 
 app.use(errorController.get404)
 
-mongoClient((client)=>{
-    console.log(client);
+mongoClient(()=>{
     app.listen(3000);
 })
