@@ -78,8 +78,11 @@ exports.postCart = (req, res, next) => {
         .then(product => {
             return req.user.addToCart(product);
         })
+        .then(()=>{
+            res.redirect('/cart');
+        })
         .catch(err => {
-            console.log(err)
+            console.log(err);
         });
     // let fetchCart;
     // let newQuantity = 1;
