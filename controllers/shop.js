@@ -92,7 +92,7 @@ exports.postOrder = (req, res, next) => {
         .populate('cart.items.productId')
         .then(user => {
             const products = user.cart.items.map(i=>{
-                return {quantity:i.quantity,product:i.productId};
+                return {quantity:i.quantity,product:{...i.productId._doc}}; //Because productId containt meltiple metadata so must to use _doc to get only data we need
             });
             const order = new Order({
                 user: {
