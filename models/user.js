@@ -98,6 +98,14 @@ class User {
             })
     }
 
+    getOrders(){
+        const db = getDb();
+        return db
+            .collection('orders')
+            .find({'user._id': new ObjectId(this._id)}) //Compare
+            .toArray();
+    }
+
     static findById(userId) {
         const db = getDb();
         return db.collection('users').findOne({ _id: new ObjectId(userId) })
