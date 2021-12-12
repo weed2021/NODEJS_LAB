@@ -11,13 +11,13 @@ const userSchema = new Schema({
     },
     cart: {
         items: [{
-            productId: {type: Schema.Types.ObjectId, required: true},
-            quantity: {type: Number, required: true}
+            productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+            quantity: { type: Number, required: true }
         }]
-    }  
+    }
 });
 
-module.exports = mongoose.model('User',userSchema);
+module.exports = mongoose.model('User', userSchema);
 
 
 // const mongdoDb = require('mongodb');
