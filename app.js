@@ -3,10 +3,19 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
 const mongoose = require('mongoose');
-const session = require('express-session')
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 const User = require('./models/user');
+
+const MONGODB_URI = 'mongodb+srv://funix:funix@cluster0.xox99.mongodb.net/shop';
+
 const app = express();
+
+const store = new MongoDBStore({
+    uri: MONGODB_URI,
+    collection: 'sessions'
+})
 
 app.set('view engine', 'ejs');
 app.set('views', 'views')
@@ -17,7 +26,7 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({secret: 'my secret',resave: false, saveUninitialized: false}))
+app.use(session({secret: 'my secret',resave: false, saveUninitialized: false, store: store}))
 
 app.use((req, res, next) => {
     User.findById('61b5b8e8fccae81215041e2d')
@@ -36,7 +45,7 @@ app.use(errorController.get404)
 
 
 mongoose
-    .connect('mongodb+srv://funix:funix@cluster0.xox99.mongodb.net/shop?retryWrites=true&w=majority')
+    .connect(MONGODB_URI)
     .then(()=>{
         User.findOne().then(user =>{ //findOne with no argument => always give back first element
             if(!user){
