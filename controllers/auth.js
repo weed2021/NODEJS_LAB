@@ -41,10 +41,17 @@ exports.getSignup = (req, res, next) => {
 };
 
 exports.getLogin = (req, res, next) => {
+    let message = req.flash('error');
+    if (message.length > 0) {
+        message = message[0];
+    } else {
+        message = null;
+    }
+
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        errorMessage: req.flash('error')
+        errorMessage: message
     })
 }
 
@@ -55,7 +62,7 @@ exports.postLogin = (req, res, next) => {
         .then(user => {
             //Check email valid
             if (!user) {
-                req.flash('error','Invalid email or password.')
+                req.flash('error', 'Invalid email or password.')
                 return res.redirect('/login');
             }
             //Check password valid
