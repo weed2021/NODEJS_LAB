@@ -26,16 +26,20 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({secret: 'my secret',resave: false, saveUninitialized: false, store: store}))
+app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store }))
 
 app.use((req, res, next) => {
-    User.findById('61b5b8e8fccae81215041e2d')
+    if(!req.session.user){
+        return next();
+    }
+    User.findById(req.session.user._id)
         .then(user => {
             req.user = user;
             next();
         })
         .catch(err => { console.log(err) })
 })
+
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -46,20 +50,20 @@ app.use(errorController.get404)
 
 mongoose
     .connect(MONGODB_URI)
-    .then(()=>{
-        User.findOne().then(user =>{ //findOne with no argument => always give back first element
-            if(!user){
+    .then(() => {
+        User.findOne().then(user => { //findOne with no argument => always give back first element
+            if (!user) {
                 const user = new User({
                     name: 'Zack',
                     email: 'zack@gmail.com',
                     cart: {
-                        items:[]
+                        items: []
                     }
                 })
                 user.save();  //Save method of mongoose
             }
         })
-        
+
         app.listen('3000')
     })
     .catch(err => { console.log(err) })
