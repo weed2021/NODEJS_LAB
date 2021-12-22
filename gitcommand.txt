@@ -1,1 +1,1 @@
-git checkout -b lab8_23 ; git add . ; git commit -m "lab8_23" ; git push --set-upstream origin lab8_23
+git checkout -b lab8_24 ; git add . ; git commit -m "lab8_24" ; git push --set-upstream origin lab8_24

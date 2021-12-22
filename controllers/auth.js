@@ -36,8 +36,7 @@ exports.postSignup = (req, res, next) => {
 exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
-        pageTitle: 'Signup',
-        isAuthenticated: false
+        pageTitle: 'Signup'
     });
 };
 
@@ -45,7 +44,7 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        isAuthenticated: false
+        errorMessage: req.flash('error')
     })
 }
 
@@ -56,6 +55,7 @@ exports.postLogin = (req, res, next) => {
         .then(user => {
             //Check email valid
             if (!user) {
+                req.flash('error','Invalid email or password.')
                 return res.redirect('/login');
             }
             //Check password valid
