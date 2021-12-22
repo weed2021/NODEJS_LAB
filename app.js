@@ -51,19 +51,6 @@ app.use(errorController.get404)
 mongoose
     .connect(MONGODB_URI)
     .then(() => {
-        User.findOne().then(user => { //findOne with no argument => always give back first element
-            if (!user) {
-                const user = new User({
-                    name: 'Zack',
-                    email: 'zack@gmail.com',
-                    cart: {
-                        items: []
-                    }
-                })
-                user.save();  //Save method of mongoose
-            }
-        })
-
         app.listen('3000')
     })
     .catch(err => { console.log(err) })
