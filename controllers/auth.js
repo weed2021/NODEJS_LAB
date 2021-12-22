@@ -12,8 +12,8 @@ exports.postSignup = (req, res, next) => {
                 return res.redirect('/signup');
             }
             return bcrypt
-                .hash(password,12)
-                .then(hashPassword =>{
+                .hash(password, 12)
+                .then(hashPassword => {
                     const user = new User({
                         email: email,
                         password: hashPassword,
@@ -21,14 +21,14 @@ exports.postSignup = (req, res, next) => {
                     });
                     return user.save();
                 })
-                .then(() =>{
+                .then(() => {
                     res.redirect('/login');
                 })
-                .catch(err =>{
+                .catch(err => {
                     console.log(err);
                 })
-        })   
-        .catch(err =>{
+        })
+        .catch(err => {
             console.log(err);
         })
 };
@@ -50,15 +50,28 @@ exports.getLogin = (req, res, next) => {
 }
 
 exports.postLogin = (req, res, next) => {
-    User.findById('61b5b8e8fccae81215041e2d').then(user => {
-        req.session.isLoggedIn = true;
-        req.session.user = user;
-        req.session.save(err => {
-            console.log(err);
-            res.redirect('/'); //Be sure session created before redirect
+    const email = req.body.email;
+    const password = req.body.password;
+    User.findOne({ email: email })
+        .then(user => {
+            //Check email valid
+            if (!user) {
+                return res.redirect('/login');
+            }
+            //Check password valid
+            bcrypt.compare(password, user.password)
+                .then(doMatch => {
+                    if (doMatch) {
+                        req.session.isLoggedIn = true;
+                        req.session.user = user;
+                        return req.session.save(err => {
+                            //console.log(err);
+                            res.redirect('/'); //Be sure session created before redirect
+                        })
+                    }
+                    res.redirect('/login');
+                })
         })
-
-    })
         .catch(err => { console.log(err) })
 }
 
