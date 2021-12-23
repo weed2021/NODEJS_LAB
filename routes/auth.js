@@ -16,10 +16,12 @@ router.post(
     [
         body('email')
             .isEmail()
-            .withMessage('Please enter a valid email address.'),
+            .withMessage('Please enter a valid email address.')
+            .normalizeEmail(),
         body('password', 'Password has to be valid.')
             .isLength({ min: 5 })
             .isAlphanumeric()
+            .trim()
     ],
     authController.postLogin
 );
@@ -30,6 +32,7 @@ router.post('/signup',
         check('email')
             .isEmail()
             .withMessage('Please enter valid email!')
+            .normalizeEmail()
             .custom((value, { req }) => {
                 // if (value === 'test@test.com') {
                 //     throw new Error('This email address forbidden.');
@@ -49,13 +52,16 @@ router.post('/signup',
             'Please enter a password with numbers and text and at least 5 characters'
         )
             .isLength({ min: 5 })
-            .isAlphanumeric(),
-        body('confirmPassword').custom((value, { req }) => {
-            if (value !== req.body.password) {
-                throw new Error('Passwords have to match!');
-            }
-            return true;
-        })
+            .isAlphanumeric()
+            .trim(),
+        body('confirmPassword')
+            .trim()
+            .custom((value, { req }) => {
+                if (value !== req.body.password) {
+                    throw new Error('Passwords have to match!');
+                }
+                return true;
+            })
 
     ],
     authController.postSignup);
