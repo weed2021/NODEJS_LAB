@@ -8,17 +8,50 @@ const adminController = require('../controllers/admin');
 
 const isAuth = require('../middleware/is-auth');
 
-router.get('/add-product',isAuth, adminController.getAddProduct);
+const { body } = require('express-validator')
 
-router.get('/products',isAuth,adminController.getProducts);
+router.get('/add-product', isAuth, adminController.getAddProduct);
 
-router.post('/add-product',isAuth, adminController.postAddProduct);
+router.get('/products', isAuth, adminController.getProducts);
 
-router.get('/edit-product/:productId',isAuth,adminController.getEditProduct);
+router.post('/add-product',
+    [
+        body('title')
+            .isString()
+            .isLength({ min: 5, max: 100 })
+            .trim(),
+        body('imageUrl')
+            .isURL(),
+        body('price')
+            .trim(),
+        body('description')
+            .isLength({ min: 5, max: 400 })
+            .trim(),
+    ],
+    isAuth,
+    adminController.postAddProduct
+);
 
-router.post('/edit-product',isAuth,adminController.postEditProduct);
+router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
 
-router.post('/delete-product',isAuth, adminController.postDeleteProduct);
+router.post('/edit-product',
+    [
+        body('title')
+            .isAlphanumeric()
+            .isLength({ min: 5, max: 100 })
+            .trim(),
+        body('imgUrl')
+            .isURL(),
+        body('price')
+            .trim(),
+        body('description')
+            .isLength({ min: 5, max: 400 })
+            .trim(),
+    ],
+    isAuth,
+    adminController.postEditProduct);
+
+router.post('/delete-product', isAuth, adminController.postDeleteProduct);
 
 
 
