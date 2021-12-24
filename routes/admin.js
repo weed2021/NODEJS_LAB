@@ -37,12 +37,14 @@ router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
 router.post('/edit-product',
     [
         body('title')
-            .isAlphanumeric()
+            .isString()
             .isLength({ min: 5, max: 100 })
             .trim(),
-        body('imgUrl')
-            .isURL(),
+        body('imageUrl')
+            .isURL()
+            .trim(),
         body('price')
+            .isNumeric()
             .trim(),
         body('description')
             .isLength({ min: 5, max: 400 })
@@ -52,10 +54,6 @@ router.post('/edit-product',
     adminController.postEditProduct);
 
 router.post('/delete-product', isAuth, adminController.postDeleteProduct);
-
-
-
-
 
 // module.exports = router
 module.exports = router;
