@@ -45,7 +45,7 @@ exports.postAddProduct = (req, res, next) => {
         });
     }
     const product = new Product({
-        _id: mongoose.Types.ObjectId('61b5bd061552b99dabea47a4'),
+        //_id: mongoose.Types.ObjectId('61b5bd061552b99dabea47a4'),
         title: title,
         price: price,
         description: description,
@@ -58,22 +58,6 @@ exports.postAddProduct = (req, res, next) => {
             res.redirect('/admin/products')
         })
         .catch(err => {
-            // return res.status(500).render('admin/edit-product', {
-            //     pageTitle: 'Add product page',
-            //     path: '/admin/edit-product',
-            //     editing: false,
-            //     hasError: true,
-            //     errorMessage: 'Database operation failed, please try again!',
-            //     product: {
-            //         title: title,
-            //         imageUrl: imageUrl,
-            //         price: price,
-            //         description: description
-            //     },
-            //     validationErrors: []
-            // });
-            // res.redirect('/500')
-
             const error = new Error(err);
             error.httpStatusCode = 500;
             return next(error);
@@ -169,7 +153,9 @@ exports.getProducts = (req, res, next) => {
             })
         })
         .catch(err => {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 }
 
@@ -181,7 +167,9 @@ exports.postDeleteProduct = (req, res, next) => {
             res.redirect('/admin/products');
         })
         .catch(err => {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 
 }
