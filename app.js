@@ -26,14 +26,16 @@ const fileStorage = multer.diskStorage({
         cb(null, 'images')
     },
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString() + '-' + file.originalname)
+        const currentDate = new Date().toISOString();
+        const customizedDate = currentDate.replace(/:/g, '-');
+        cb(null, customizedDate + '-' + file.originalname)
     }
 })
 const fileFilter = (req, file, cb) => {
     if (
-        file.filename === 'image/png'
-        || file.filename === 'image/jpg'
-        || file.filename === 'image/jpeg'
+        file.mimetype === 'image/png'
+        || file.mimetype === 'image/jpg'
+        || file.mimetype === 'image/jpeg'
     ) {
         cb(null, true);
     } else {

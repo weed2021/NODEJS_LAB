@@ -4,11 +4,8 @@ const {validationResult} = require('express-validator')
 
 const mongoose = require('mongoose')
 
-
 exports.getAddProduct = (req, res, next) => {
-    // if(!req.session.isLoggedIn){
-    //     res.redirect('/');
-    // }
+
     res.render('admin/edit-product', {
         pageTitle: 'Add product page',
         path: '/admin/add-product',
@@ -16,19 +13,32 @@ exports.getAddProduct = (req, res, next) => {
         hasError: false,
         errorMessage: null,
         validationErrors: []
-        //activeAddProduct: true
     })
 };
 
 exports.postAddProduct = (req, res, next) => {
     const title = req.body.title;
-    const imageUrl = req.file;
+    const image = req.file;
     const price = req.body.price;
     const description = req.body.description;
+    // console.log(image);
+    if(!image){
+        return res.status(404).render('admin/edit-product', {
+            pageTitle: 'Add product page',
+            path: '/admin/add-product',
+            editing: false,
+            hasError: true,
+            errorMessage: 'Attached file is not an image.',
+            product: {
+                title: title,
+                price: price,
+                description: description
+            },
+            validationErrors: []
+        });
+    }
 
-    console.log(imageUrl);
     const errors = validationResult(req);
-    // console.log(errors);
     if(!errors.isEmpty()){
         return res.status(404).render('admin/edit-product', {
             pageTitle: 'Add product page',
@@ -38,13 +48,15 @@ exports.postAddProduct = (req, res, next) => {
             errorMessage: errors.array()[0].msg,
             product: {
                 title: title,
-                imageUrl: imageUrl,
                 price: price,
                 description: description
             },
             validationErrors: errors.array()
         });
     }
+
+    const imageUrl = image.path;
+    console.log(imageUrl)
     const product = new Product({
         //_id: mongoose.Types.ObjectId('61b5bd061552b99dabea47a4'),
         title: title,
@@ -100,7 +112,7 @@ exports.postEditProduct = (req, res, next) => {
     const prodId = req.body.productId;
     const updatedTitle = req.body.title;
     const updatedPrice = req.body.price;
-    const updatedImageUrl = req.body.imageUrl;
+    const image = req.file;
     const updatedDesc = req.body.description;
 
     const errors = validationResult(req);
@@ -114,7 +126,6 @@ exports.postEditProduct = (req, res, next) => {
             errorMessage: errors.array()[0].msg,
             product: {
                 title: updatedTitle,
-                imageUrl: updatedImageUrl,
                 price: updatedPrice,
                 description: updatedDesc,
                 _id: prodId
@@ -125,10 +136,13 @@ exports.postEditProduct = (req, res, next) => {
 
     Product.findById(prodId)
         .then(product =>{
-            product.title = updatedTitle,
-            product.price = updatedPrice,
-            product.description = updatedDesc,
-            product.imageUrl = updatedImageUrl
+            product.title = updatedTitle;
+            product.price = updatedPrice;
+            product.description = updatedDesc;
+            if(image){
+                product.imageUrl = image.path;
+            }
+            
             return product.save()
         })
         .then(result => {
