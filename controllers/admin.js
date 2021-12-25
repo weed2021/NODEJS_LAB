@@ -4,6 +4,8 @@ const {validationResult} = require('express-validator')
 
 const mongoose = require('mongoose')
 
+const fileHelper = require('../util/file')
+
 exports.getAddProduct = (req, res, next) => {
 
     res.render('admin/edit-product', {
@@ -139,13 +141,15 @@ exports.postEditProduct = (req, res, next) => {
             product.title = updatedTitle;
             product.price = updatedPrice;
             product.description = updatedDesc;
+            //If user upload a new image file
             if(image){
+                fileHelper.deleteFile(product.imageUrl); //Delete file image with path
                 product.imageUrl = image.path;
             }
             
             return product.save()
         })
-        .then(result => {
+        .then(() => {
             console.log('Updated Product');
             res.redirect('/admin/products');
         })
@@ -176,7 +180,14 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findByIdAndRemove(prodId)
+    Product.findById(prodId)
+        .then(product=>{
+            if(!product){
+                return next(new Error("Product not found"));
+            }
+            fileHelper.deleteFile(product.imageUrl); //Delete file image with path
+            return Product.findByIdAndRemove(prodId);
+        })
         .then(() => {
             console.log('Deleted Product');
             res.redirect('/admin/products');
