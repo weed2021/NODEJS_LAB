@@ -5,6 +5,7 @@ const path = require('path');
 
 const PDFDocument = require('pdfkit');
 
+const ITEMS_PER_PAGE = 2;
 
 exports.getProducts = (req, res, next) => {
     Product.find()
@@ -43,7 +44,10 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+    const page = req.query.page;
     Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE)
         .then(products => {
             res.render('shop/index', {
                 prods: products,
@@ -182,13 +186,13 @@ exports.getInvoice = (req, res, next) => {
             }
             const invoiceName = 'invoice-' + orderId + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName); //"data" and "invoices" is folder
-            
+
             const pdfDoc = new PDFDocument();
             // res.setHeader('Content-Type', 'application/pdf');
             // res.setHeader('Content-Disposition','inline; filename="' + invoiceName + '"');
             pdfDoc.pipe(fs.createWriteStream(invoicePath));
             pdfDoc.pipe(res);
-            pdfDoc.fontSize(24).text('Invoice',{
+            pdfDoc.fontSize(24).text('Invoice', {
                 underline: true
             });
             pdfDoc.text('---------------------')
@@ -197,14 +201,14 @@ exports.getInvoice = (req, res, next) => {
             order.products.forEach(prod => {
                 totalPrice += prod.product.price * prod.quantity;
                 pdfDoc.fontSize(14).text(
-                    prod.product.title + '-' +  
+                    prod.product.title + '-' +
                     prod.quantity + ' x $' +
-                    prod.product.price                   
+                    prod.product.price
                 );
             });
             pdfDoc.text('---------------------')
             pdfDoc.text('Total price: $' + totalPrice)
-            
+
             pdfDoc.end(); //To end write file
 
             // fs.readFile(invoicePath, (err, data) => {
@@ -216,7 +220,7 @@ exports.getInvoice = (req, res, next) => {
             //     res.send(data);
             // })
             // const file = fs.createReadStream(invoicePath);
-            
+
             // file.pipe(res);
         })
         .catch(err => { next(err) });
