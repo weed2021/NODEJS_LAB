@@ -110,8 +110,8 @@ exports.postOrder = (req, res, next) => {
     req.user
         .populate('cart.items.productId')
         .then(user => {
-            const products = user.cart.items.map(i=>{
-                return {quantity:i.quantity,product:{...i.productId._doc}}; //Because productId containt meltiple metadata so must to use _doc to get only data we need
+            const products = user.cart.items.map(i => {
+                return { quantity: i.quantity, product: { ...i.productId._doc } }; //Because productId containt meltiple metadata so must to use _doc to get only data we need
             });
             const order = new Order({
                 user: {
@@ -133,7 +133,7 @@ exports.postOrder = (req, res, next) => {
             error.httpStatusCode = 500;
             return next(error);
         });
-    
+
 
 
 
@@ -142,19 +142,19 @@ exports.postOrder = (req, res, next) => {
 }
 
 exports.getOrders = (req, res, next) => {
-    Order.find({'user.userId': req.user._id})
-    .then(orders => {
-        res.render('shop/orders', {
-            path: '/orders',
-            pageTitle: 'Your Orders',
-            orders: orders
+    Order.find({ 'user.userId': req.user._id })
+        .then(orders => {
+            res.render('shop/orders', {
+                path: '/orders',
+                pageTitle: 'Your Orders',
+                orders: orders
+            });
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
-    })
-    .catch(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
-    });
 };
 
 exports.getCheckout = (req, res, next) => {
@@ -164,16 +164,32 @@ exports.getCheckout = (req, res, next) => {
     });
 };
 
-exports.getInvoice = (req,res,next) =>{
+exports.getInvoice = (req, res, next) => {
     const orderId = req.params.orderId;
-    const invoiceName = 'invoice-' + orderId + '.pdf';
-    const invoicePath = path.join('data','invoices',invoiceName); //"data" and "invoices" is folder
-    fs.readFile(invoicePath,(err,data)=>{
-        if(err){
-            return next(err);
-        }
-        res.setHeader('Content-Type','application/pdf');
-        res.setHeader('Content-Disposition','attachment; filename="' + invoiceName + '"');
-        res.send(data);
-    })
+
+    //Check to just authenticate User can download invoice
+    Order.findById(orderId)
+        .then(order => {
+            //If order does not exist
+            if (!order) {
+                return next(new Error('No order found'));
+            }
+            //Check if user in session not match with user in order info
+            if (order.user.userId.toString() !== req.user._id.toString()) {
+                return next(new Error('Unauthorized'));
+            }
+            const invoiceName = 'invoice-' + orderId + '.pdf';
+            const invoicePath = path.join('data', 'invoices', invoiceName); //"data" and "invoices" is folder
+            fs.readFile(invoicePath, (err, data) => {
+                if (err) {
+                    return next(err);
+                }
+                res.setHeader('Content-Type', 'application/pdf');
+                //res.setHeader('Content-Disposition','attachment; filename="' + invoiceName + '"');
+                res.send(data);
+            })
+        })
+        .catch(err => { next(err) });
+
+
 }
